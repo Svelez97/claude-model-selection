@@ -59,7 +59,7 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
    - A more expensive model than the session (tier order: Haiku < Sonnet < Opus < Fable), whether set with `model` or by the subagent's own definition: ask the user first, in one line, naming the model and why the task needs it. Launch it only after an explicit "yes".
    - The plugin enforces this with a hook: a more expensive subagent triggers an approval prompt even if this rule is forgotten.
 
-8. **Reply with this short block** (translated to the user's language) before any other work or question, then continue with the task. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
+8. **Reply with this short block** (translated to the user's language) before any other work or question. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
 
 ```
 🧭 Claude-Model-Selection
@@ -72,7 +72,11 @@ Usage: 5h <x>% (resets in <t>) · week <y>% (resets in <t>) · context <n>k toke
 ```
 
    - Show the *Tip* only when the current model is Opus or Fable and the task does not need it.
-   - If the recommended model or effort differs from the current one, tell the user in one line to change it in the app's model picker (or with `/model` in the terminal). Claude cannot change the model or effort of its own session.
+
+9. **Stop or continue**:
+   - **Recommended model differs from the current one → STOP.** End your reply right after the block with one line asking the user to switch in the app's model picker (or with `/model` in the terminal) and then send any message (e.g. "done") to start; or to reply "continue" to keep the current model. Do not start the task in this reply: no tool calls, no file reads, no partial answer, no plan. Claude cannot change the model of its own session, so the user must do it.
+   - **Same model → continue** with the task right after the block. If only the effort differs, add one line suggesting the effort change and continue (Claude cannot reliably see its current effort, so this never blocks).
+   - **Next message after a stop**: do not run this skill or show the block again. Carry out the original request from the earlier message on whatever model is now active, even if the user kept the current one.
 
 ## Mid-chat
 
