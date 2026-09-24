@@ -52,7 +52,12 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
 
 6. **Unused connectors**: if "MCP tools" weighs > ~10k tokens and `mcp__ccd_connectors__session_connectors_status` is available, call it and find connectors the task clearly does not need (e.g. email or browser for a coding task). Suggest turning them off in one line, with the tokens it would save. Only after an explicit "yes", call `mcp__ccd_connectors__set_session_connector_enabled` (`enabled: false`), noting it also stays off by default in new chats. If there are no clear candidates or the tools are unavailable, skip this step.
 
-7. **Cheap subagents**: if the task is large and has separable, mechanical parts (broad searches across many files, repetitive edits, gathering data), propose delegating them to a subagent with `model: "haiku"` or `"sonnet"` (Agent tool) while the main conversation stays on the current model. Only propose it; delegate only if the user agrees. Do not suggest it for small tasks: the subagent starts without context and costs more than it saves.
+7. **Cheap subagents**: if the task is large and has separable, mechanical parts (broad searches across many files, repetitive edits, gathering data), propose delegating them to a subagent with `model: "haiku"` or `"sonnet"` (Agent tool) while the main conversation stays on the current model. Do not suggest it for small tasks: the subagent starts without context and costs more than it saves.
+
+   **Subagent model rule (applies to every subagent, all chat long):**
+   - Same model as the session or a cheaper one: allowed, no need to ask.
+   - A more expensive model than the session (tier order: Haiku < Sonnet < Opus < Fable), whether set with `model` or by the subagent's own definition: ask the user first, in one line, naming the model and why the task needs it. Launch it only after an explicit "yes".
+   - The plugin enforces this with a hook: a more expensive subagent triggers an approval prompt even if this rule is forgotten.
 
 8. **Reply with this short block** (translated to the user's language) before any other work or question, then continue with the task. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
 
