@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/check-subagent-model.sh\""
+            "command": "bash -c \"$(tr -d '\\r' < \"${CLAUDE_PLUGIN_ROOT}/hooks/check-subagent-model.sh\")\""
           }
         ]
       }
