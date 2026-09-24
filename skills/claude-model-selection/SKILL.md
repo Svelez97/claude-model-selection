@@ -16,6 +16,7 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
 1. **Usage and context**: if the `mcp__ccd_session_mgmt__get_usage` tool is available (load it with ToolSearch `select:mcp__ccd_session_mgmt__get_usage` if deferred), call it.
    - From `plan.windows`: 5-hour limit % and weekly %, with `resetsIn`.
    - From `context`: `tokensUsed` and the tokens of the "MCP tools" category.
+   - **Current model and effort**: if `mcp__ccd_session_mgmt__get_session` is available (load it in the same ToolSearch call), call it with `session_id: "self"` and read `model` and `effort`. Otherwise take the model from your own system prompt and treat the effort as unknown.
    - **Fallback**: if the tool does not exist (e.g. terminal CLI, IDE, web) or its status is not `ok`, do not fail and do not guess numbers. Write one line telling the user to run `/usage` (plan limits) and `/context` (context size) themselves, and skip steps 3, 5 and 6 unless the user shares those numbers.
 
 2. **Classify the task** from the request alone:
@@ -59,12 +60,12 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
    - A more expensive model than the session (tier order: Haiku < Sonnet < Opus < Fable), whether set with `model` or by the subagent's own definition: ask the user first, in one line, naming the model and why the task needs it. Launch it only after an explicit "yes".
    - The plugin enforces this with a hook: a more expensive subagent triggers an approval prompt even if this rule is forgotten.
 
-8. **Reply with this short block** (translated to the user's language) before any other work or question. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
+8. **Reply with this short block** (translated to the user's language) before any other work or question. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version, plus its effort when known. Omit only the optional lines (marked *) when they do not apply:
 
 ```
 🧭 Claude-Model-Selection
 Task: <summary in ≤10 words>
-Recommended: <Model> · effort <level>  (current: <current model>)
+Recommended: <Model> · effort <level>  (current: <current model> · <current effort, if known>)
 Reason: <one line>
 Usage: 5h <x>% (resets in <t>) · week <y>% (resets in <t>) · context <n>k tokens   (fallback: run /usage and /context)
 *Savings: <connectors to turn off / compact / subagent>
@@ -73,10 +74,13 @@ Usage: 5h <x>% (resets in <t>) · week <y>% (resets in <t>) · context <n>k toke
 
    - Show the *Tip* only when the current model is Opus or Fable and the task does not need it.
 
-9. **Stop or continue**:
-   - **Recommended model differs from the current one → STOP.** End your reply right after the block with one line asking the user to switch in the app's model picker (or with `/model` in the terminal) and then send any message (e.g. "done") to start; or to reply "continue" to keep the current model. Do not start the task in this reply: no tool calls, no file reads, no partial answer, no plan. Claude cannot change the model of its own session, so the user must do it.
-   - **Same model → continue** with the task right after the block. If only the effort differs, add one line suggesting the effort change and continue (Claude cannot reliably see its current effort, so this never blocks).
-   - **Next message after a stop**: do not run this skill or show the block again. Carry out the original request from the earlier message on whatever model is now active, even if the user kept the current one.
+9. **Stop or continue**: compare the recommendation with the current setting. Tier order: Haiku < Sonnet < Opus < Fable; effort order: low < medium < high < xhigh < max < ultracode.
+   - **Current model or effort is lower than recommended → STOP and ask for approval.** End your reply right after the block with one line: the current setting may fall short for this task; switch in the app's model picker (or with `/model` in the terminal) and send any message (e.g. "done"), or reply "continue" to approve working with the current, lower setting.
+   - **Current model or effort is higher than recommended → STOP.** End your reply right after the block with one line: switching would save usage; switch and send any message, or reply "continue" to keep the current setting.
+   - In both STOP cases, do not start the task in this reply: no tool calls, no file reads, no partial answer, no plan. Claude cannot change the model or effort of its own session, so the user must do it.
+   - **Model and effort both match → continue** with the task right after the block.
+   - **Effort unknown** (tool unavailable) or the model is Haiku (no effort setting): compare the model only. Mention the recommended effort in one line, but never stop for effort alone.
+   - **Next message after a stop**: do not run this skill or show the block again. Carry out the original request from the earlier message on whatever model and effort are now active; a "continue" counts as the user's approval.
 
 ## Mid-chat
 

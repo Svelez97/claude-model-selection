@@ -53,7 +53,11 @@ When the first real message of a chat arrives (a bare "hi" is ignored), it:
    - turn off connectors the task does not need (only with your OK);
    - hand large mechanical sub-tasks to a cheaper Haiku or Sonnet subagent (only with your OK).
 
-6. **Waits for you when a switch is needed.** If the recommended model differs from your current one, Claude stops after the recommendation and does not start the task. Switch models in the picker (or with `/model`), then send any message such as "done", and it carries out your original request on the new model. Reply "continue" to keep your current model instead. If the model already matches, it goes straight to the task.
+6. **Waits for you when your setting does not match.** It compares your current model and effort with its recommendation, and stops before starting the task if they differ:
+   - **Lower than recommended**: the result may fall short. Switch up, or reply "continue" to approve working with the lower setting.
+   - **Higher than recommended**: you could save usage. Switch down, or reply "continue" to keep your setting.
+
+   After switching, send any message such as "done" and it carries out your original request. If model and effort already match, it goes straight to the task. The current effort can only be read in the Claude desktop app; elsewhere only the model is compared.
 
 If the task changes a lot mid-chat, it gives a one-line recommendation instead of the full block.
 
@@ -97,4 +101,4 @@ To skip it for a chat, say "skip selection" in your first message.
 
 ### En español
 
-Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet, Opus o Fable) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Si el modelo recomendado es distinto del que usas, se detiene y espera a que lo cambies; luego escribe cualquier mensaje (por ejemplo "listo") y hace tu pedido original. Si Claude quiere lanzar un subagente con un modelo más caro que el de tu sesión, primero te pide autorización; con el mismo modelo o uno más barato lo hace sin preguntar. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.
+Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet, Opus o Fable) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Si tu modelo o esfuerzo no coincide con lo recomendado (sea menor o mayor), se detiene antes de empezar: cámbialo y escribe cualquier mensaje (por ejemplo "listo"), o responde "continuar" para aprobar seguir con tu configuración actual. Si Claude quiere lanzar un subagente con un modelo más caro que el de tu sesión, primero te pide autorización; con el mismo modelo o uno más barato lo hace sin preguntar. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.

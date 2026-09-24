@@ -11,5 +11,5 @@ if [ -n "$transcript" ] && [ -f "$transcript" ] && grep -q '"skill":"[^"]*claude
   exit 0
 fi
 
-echo "Claude-Model-Selection: the claude-model-selection skill has not run yet in this chat. Before doing anything else for this message, invoke it, unless the message is only a greeting or the user asked to skip it in this chat (for example: skip selection, sin seleccion). If it recommends a different model than the current one, stop after the recommendation and wait for the user to switch."
+echo "Claude-Model-Selection: the claude-model-selection skill has not run yet in this chat. Before doing anything else for this message, invoke it, unless the message is only a greeting or the user asked to skip it in this chat (for example: skip selection, sin seleccion). If the current model or effort does not match its recommendation (lower or higher), stop after the recommendation and wait for the user to switch or approve."
 exit 0
