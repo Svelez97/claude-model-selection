@@ -1,0 +1,15 @@
+{
+  "name": "claude-model-selection",
+  "description": "Claude-Model-Selection: pick the cheapest Claude model and effort for each chat.",
+  "owner": {
+    "name": "Svelez97",
+    "url": "https://github.com/Svelez97"
+  },
+  "plugins": [
+    {
+      "name": "claude-model-selection",
+      "description": "Recommends the cheapest Claude model and effort level for each chat, with 5-hour, weekly and context usage.",
+      "source": "./"
+    }
+  ]
+}

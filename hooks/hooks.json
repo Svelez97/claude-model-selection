@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Claude-Model-Selection plugin: when the first real user message of this chat arrives (not a bare greeting), invoke the claude-model-selection skill once, before starting the task. Skip it if the user asks to skip it (for example: no selection, skip selection, sin seleccion). Do not repeat it on later messages; mid-chat, only follow the Mid-chat rule of that skill when the task clearly changes in complexity.'"
+          }
+        ]
+      }
+    ]
+  }
+}

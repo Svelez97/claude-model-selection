@@ -1,0 +1,78 @@
+# Claude-Model-Selection
+
+A Claude Code plugin that helps you spend fewer tokens. At the start of every chat it looks at what you asked for and recommends the cheapest Claude model (**Haiku**, **Sonnet** or **Opus**) and **effort level** that will still do the job well. It also shows how much of your plan you have used.
+
+```
+🧭 Claude-Model-Selection
+Task: design architecture for a live-money trading bot
+Recommended: Opus · effort high  (current: Sonnet)
+Reason: system design with real-money risk
+Usage: 5h 12% (resets in 3h 40m) · week 49% (resets in 3d 4h) · context 58k tokens
+```
+
+It replies in your language.
+
+## Install
+
+In Claude Code, run:
+
+```
+/plugin marketplace add Svelez97/claude-model-selection
+/plugin install claude-model-selection@claude-model-selection
+```
+
+Or just ask Claude: *"Install the plugin claude-model-selection from GitHub: Svelez97/claude-model-selection"*.
+
+Start a new chat afterwards so it loads.
+
+## What it does
+
+When the first real message of a chat arrives (a bare "hi" is ignored), it:
+
+1. **Reads your usage**: the 5-hour limit, weekly limit and context size.
+2. **Classifies the task** from your message alone. It does not read files, so the check stays cheap.
+
+   | Task | Model | Effort |
+   |---|---|---|
+   | Quick questions, formatting, simple commands | Haiku | low |
+   | Small edits, scripts, clear bugs, explanations | Sonnet | low / medium |
+   | Multi-file features, refactors, unclear bugs, data analysis | Sonnet | medium / high |
+   | Architecture, hard bugs, security, real-money or high-impact decisions | Opus | high / xhigh |
+
+3. **Adjusts to your plan**: if you are close to your 5-hour or weekly limit, it recommends one tier lower and tells you when the limit resets.
+4. **Avoids pointless switches**: switching models mid-chat throws away the prompt cache, and the new model re-reads the whole conversation. On borderline tasks it keeps your current model. In a long chat it offers a summary so you can open a new chat on the right model.
+5. **Suggests savings** only when they apply:
+   - compact the chat or start a new one when the context gets large;
+   - turn off connectors the task does not need (only with your OK);
+   - hand large mechanical sub-tasks to a cheaper Haiku or Sonnet subagent (only with your OK).
+
+If the task changes a lot mid-chat, it gives a one-line recommendation instead of the full block.
+
+To skip it for a chat, say "skip selection" in your first message.
+
+## Notes and limits
+
+- **Claude cannot switch its own model.** You change it in the model picker, or with `/model` in the terminal. The plugin only recommends.
+- **Live usage numbers need the Claude desktop app.** It reads them with a tool that only the desktop app (Code tab) provides. Elsewhere (terminal, IDE, web) it asks you to run `/usage` and `/context` and still recommends a model and effort.
+- The thresholds (80 % of the 5-hour limit, 85 % of the week, 150k context tokens) are rules of thumb. To change them, edit `skills/claude-model-selection/SKILL.md`.
+
+## How it works
+
+- `skills/claude-model-selection/SKILL.md`: the skill with the selection rules.
+- `hooks/hooks.json`: a `SessionStart` hook that tells Claude to run the skill once at the start of each new chat.
+
+## Uninstall
+
+```
+/plugin uninstall claude-model-selection@claude-model-selection
+```
+
+## License
+
+[MIT](LICENSE)
+
+---
+
+### En español
+
+Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet u Opus) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.

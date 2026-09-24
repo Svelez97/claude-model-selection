@@ -1,0 +1,14 @@
+{
+  "name": "claude-model-selection",
+  "displayName": "Claude-Model-Selection",
+  "version": "1.0.0",
+  "description": "At the start of every chat, recommends the cheapest Claude model (Haiku, Sonnet, Opus) and effort level that fits the task, and shows your 5-hour, weekly and context usage.",
+  "author": {
+    "name": "Svelez97",
+    "url": "https://github.com/Svelez97"
+  },
+  "homepage": "https://github.com/Svelez97/claude-model-selection",
+  "repository": "https://github.com/Svelez97/claude-model-selection",
+  "license": "MIT",
+  "keywords": ["model-selection", "tokens", "usage", "cost", "haiku", "sonnet", "opus", "effort"]
+}
