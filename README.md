@@ -14,14 +14,31 @@ It replies in your language.
 
 ## Install
 
-In Claude Code, run:
+In Claude Code, paste these two commands **one at a time** (Claude Code runs one slash command per message).
+
+1. Add the marketplace:
+
+   ```
+   /plugin marketplace add Svelez97/claude-model-selection
+   ```
+
+2. Install the plugin:
+
+   ```
+   /plugin install claude-model-selection@claude-model-selection
+   ```
+
+**Or paste this single message into Claude** and it installs everything for you:
 
 ```
-/plugin marketplace add Svelez97/claude-model-selection
-/plugin install claude-model-selection@claude-model-selection
+Install the plugin claude-model-selection from GitHub: Svelez97/claude-model-selection
 ```
 
-Or just ask Claude: *"Install the plugin claude-model-selection from GitHub: Svelez97/claude-model-selection"*.
+**Or, from a terminal**, in one line:
+
+```bash
+claude plugin marketplace add Svelez97/claude-model-selection && claude plugin install claude-model-selection@claude-model-selection
+```
 
 Start a new chat afterwards so it loads.
 
@@ -101,4 +118,4 @@ To skip it for a chat, say "skip selection" in your first message.
 
 ### En español
 
-Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet, Opus o Fable) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Si tu modelo o esfuerzo no coincide con lo recomendado (sea menor o mayor), se detiene antes de empezar: cámbialo y escribe cualquier mensaje (por ejemplo "listo"), o responde "continuar" para aprobar seguir con tu configuración actual. Si Claude quiere lanzar un subagente con un modelo más caro que el de tu sesión, primero te pide autorización; con el mismo modelo o uno más barato lo hace sin preguntar. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.
+Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet, Opus o Fable) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Si tu modelo o esfuerzo no coincide con lo recomendado (sea menor o mayor), se detiene antes de empezar: cámbialo y escribe cualquier mensaje (por ejemplo "listo"), o responde "continuar" para aprobar seguir con tu configuración actual. Si Claude quiere lanzar un subagente con un modelo más caro que el de tu sesión, primero te pide autorización; con el mismo modelo o uno más barato lo hace sin preguntar. Para instalarlo, pega los dos comandos de arriba **uno por uno** (Claude Code ejecuta un solo comando `/` por mensaje), o pega en Claude el mensaje de una sola línea de arriba y él lo instala por ti. Responde en tu idioma.
