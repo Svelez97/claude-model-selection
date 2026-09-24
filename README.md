@@ -1,6 +1,6 @@
 # Claude-Model-Selection
 
-A Claude Code plugin that helps you spend fewer tokens. At the start of every chat it looks at what you asked for and recommends the cheapest Claude model (**Haiku**, **Sonnet** or **Opus**) and **effort level** that will still do the job well. It also shows how much of your plan you have used.
+A Claude Code plugin that helps you spend fewer tokens. At the start of every chat it looks at what you asked for and recommends the cheapest Claude model (**Haiku**, **Sonnet**, **Opus** or **Fable**) and **effort level** that will still do the job well. It also shows how much of your plan you have used.
 
 ```
 🧭 Claude-Model-Selection
@@ -34,12 +34,19 @@ When the first real message of a chat arrives (a bare "hi" is ignored), it:
 
    | Task | Model | Effort |
    |---|---|---|
-   | Quick questions, formatting, simple commands | Haiku | low |
+   | Quick questions, formatting, simple commands | Haiku | n/a (Haiku has no effort setting) |
    | Small edits, scripts, clear bugs, explanations | Sonnet | low / medium |
    | Multi-file features, refactors, unclear bugs, data analysis | Sonnet | medium / high |
    | Architecture, hard bugs, security, real-money or high-impact decisions | Opus | high / xhigh |
+   | Very large, long-running projects Claude runs mostly on its own, where mistakes are very costly | Fable | high / xhigh |
 
-3. **Adjusts to your plan**: if you are close to your 5-hour or weekly limit, it recommends one tier lower and tells you when the limit resets.
+   It always picks one effort level. Two more levels are kept for rare cases, and it explains why when it suggests them:
+   - **max**: deepest reasoning, for extremely hard problems that already failed at xhigh.
+   - **ultracode**: a Claude Code setting that plans a whole multi-step workflow per task; for large builds only.
+
+   Fable uses the most of your limit and needs a paid plan, so it is recommended only for the last row. If you do not have it, you get Opus instead.
+
+3. **Adjusts to your plan**: if you are close to your 5-hour or weekly limit, it recommends one tier lower (Fable → Opus → Sonnet → Haiku), avoids max and ultracode, and tells you when the limit resets.
 4. **Avoids pointless switches**: switching models mid-chat throws away the prompt cache, and the new model re-reads the whole conversation. On borderline tasks it keeps your current model. In a long chat it offers a summary so you can open a new chat on the right model.
 5. **Suggests savings** only when they apply:
    - compact the chat or start a new one when the context gets large;
@@ -75,4 +82,4 @@ To skip it for a chat, say "skip selection" in your first message.
 
 ### En español
 
-Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet u Opus) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.
+Plugin para Claude Code que, al iniciar cada chat, recomienda el modelo más barato (Haiku, Sonnet, Opus o Fable) y el nivel de esfuerzo adecuados para tu tarea. También muestra tu uso del límite de 5 horas, el semanal y el tamaño del contexto. Se instala con los dos comandos de arriba, o pidiéndoselo a Claude, y responde en tu idioma.

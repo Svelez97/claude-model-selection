@@ -1,6 +1,6 @@
 ---
 name: claude-model-selection
-description: Claude-Model-Selection. At the start of a new chat (the user's first message), briefly assess the requested task and recommend which Claude model to use (Haiku, Sonnet or Opus) and which effort level (low to xhigh), along with the current 5-hour limit usage, weekly usage percentage and context size. Also use it when the user asks which model or effort fits, how much usage they have left, or when the task clearly changes in complexity mid-chat.
+description: Claude-Model-Selection. At the start of a new chat (the user's first message), briefly assess the requested task and recommend which Claude model to use (Haiku, Sonnet, Opus or Fable) and which effort level (low to xhigh, with max and ultracode for special cases), along with the current 5-hour limit usage, weekly usage percentage and context size. Also use it when the user asks which model or effort fits, how much usage they have left, or when the task clearly changes in complexity mid-chat.
 ---
 
 # Claude-Model-Selection
@@ -9,7 +9,7 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
 
 **Language:** always reply in the user's language, including the labels of the output block.
 
-**Model names:** refer to models only by family (Haiku, Sonnet, Opus), never by version number, so the skill stays current as new versions ship.
+**Model names:** refer to models only by family (Haiku, Sonnet, Opus, Fable), never by version number, so the skill stays current as new versions ship.
 
 ## Steps
 
@@ -26,15 +26,22 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
 | Editing 1–2 files, small scripts, obvious bugs, templated documents/proposals, explanations | Sonnet | low – medium |
 | Multi-file features, moderate refactors, debugging with an unclear cause, data analysis | Sonnet | medium – high |
 | Architecture, system design, hard or intermittent bugs, real-money strategies, security review, high-impact decisions | Opus | high – xhigh |
+| Very large, long-running projects Claude should plan and execute mostly on its own (e.g. building a whole app or migrating a large codebase end to end), where a mistake is very costly | Fable | high – xhigh |
+
+   - Fable is the most capable model and uses the most of the plan limit; it is only on paid plans. Recommend it only for the last row, never for tasks Opus handles well. If the user does not have it, fall back to Opus.
+   - Haiku has no adjustable effort: for Haiku write `effort: n/a` (or omit it).
 
    - The table gives ranges for guidance, but always recommend **exactly one** effort level, never a range.
-   - Normal effort levels: **low, medium, high, xhigh**. Only suggest **max** in very special cases (e.g. a bug risking real money that has already failed several times) and explain why.
+   - Normal effort levels: **low, medium, high, xhigh**. Two more exist only for very special cases; explain why when you suggest them:
+     - **max**: deepest reasoning; may overthink and has diminishing returns. Only for an extremely hard problem that already failed at xhigh (e.g. a bug risking real money that keeps coming back).
+     - **ultracode** (Claude Code only): plans a whole multi-step workflow per task with xhigh reasoning on every message; very expensive. Only for a large, substantive build where that orchestration clearly pays off.
+   - Effort is calibrated per model, so the same level is not the same spend on every model.
    - **Borderline tasks**: if the task sits between two tiers and the current model already belongs to one of them, keep the current model and do not suggest a switch; switching on weak evidence wastes cache (see step 4). Only recommend a switch when the evidence is clear.
    - If still unsure and nothing favors the current model, pick the cheaper tier and say so: "if it falls short, move up to X".
 
 3. **Adjust for plan usage**:
-   - 5-hour ≥ 80 % or weekly ≥ 85 %: drop one tier (Opus→Sonnet, Sonnet→Haiku) unless the task is critical; say when the limit resets.
-   - Weekly ahead of pace (e.g. > 60 % with more than half the week left): prefer Sonnet/Haiku.
+   - 5-hour ≥ 80 % or weekly ≥ 85 %: drop one tier (Fable→Opus, Opus→Sonnet, Sonnet→Haiku) unless the task is critical; say when the limit resets.
+   - Weekly ahead of pace (e.g. > 60 % with more than half the week left): prefer Sonnet/Haiku and avoid Fable, max and ultracode.
 
 4. **Cost of switching models (cache)**: each model has its own prompt cache, so after a switch the new model re-reads the whole conversation at full price.
    - Start of chat (little history): switching is cheap, recommend it freely.
@@ -47,7 +54,7 @@ Goal: save tokens by picking the cheapest model and effort that will still do th
 
 7. **Cheap subagents**: if the task is large and has separable, mechanical parts (broad searches across many files, repetitive edits, gathering data), propose delegating them to a subagent with `model: "haiku"` or `"sonnet"` (Agent tool) while the main conversation stays on the current model. Only propose it; delegate only if the user agrees. Do not suggest it for small tasks: the subagent starts without context and costs more than it saves.
 
-8. **Reply with this short block** (translated to the user's language) before any other work or question, then continue with the task. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet or Opus) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
+8. **Reply with this short block** (translated to the user's language) before any other work or question, then continue with the task. The block is mandatory every time this skill runs, even if the task first needs clarification or files are missing. Always fill in `current:` with the family (Haiku, Sonnet, Opus or Fable) of the model you are running on, without version. Omit only the optional lines (marked *) when they do not apply:
 
 ```
 🧭 Claude-Model-Selection
@@ -56,10 +63,10 @@ Recommended: <Model> · effort <level>  (current: <current model>)
 Reason: <one line>
 Usage: 5h <x>% (resets in <t>) · week <y>% (resets in <t>) · context <n>k tokens   (fallback: run /usage and /context)
 *Savings: <connectors to turn off / compact / subagent>
-*Tip: open chats on Sonnet (or Haiku) and move up to Opus only when this skill recommends it.
+*Tip: open chats on Sonnet (or Haiku) and move up to Opus or Fable only when this skill recommends it.
 ```
 
-   - Show the *Tip* only when the current model is Opus and the task does not need it.
+   - Show the *Tip* only when the current model is Opus or Fable and the task does not need it.
    - If the recommended model or effort differs from the current one, tell the user in one line to change it in the app's model picker (or with `/model` in the terminal). Claude cannot change the model or effort of its own session.
 
 ## Mid-chat
